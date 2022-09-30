@@ -21,6 +21,7 @@ func main() {
 	// router := gin.New() 	// WITH OUT LOGS
 	router := gin.Default() // WITH DEFAULT LOGS
 	client := getClient()
+
 	// ==== ROUTES ====
 	routes.AddressRoutes(client, router)
 	routes.ProductRoutes(client, router)
