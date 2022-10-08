@@ -23,6 +23,7 @@ func main() {
 	client := getClient()
 
 	// ==== ROUTES ====
+	routes.AuthRoutes(client, router)
 	routes.AddressRoutes(client, router)
 	routes.ProductRoutes(client, router)
 	router.Run("localhost:" + port)

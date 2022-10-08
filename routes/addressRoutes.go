@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"fmt"
 	"golang-ecommerce-server/models"
 	"golang-ecommerce-server/responses"
 	"log"
@@ -29,7 +30,7 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 			var element models.Address
 			err := cursor.Decode((&element))
 			if err != nil {
-				log.Fatal(err)
+				fmt.Println(err)
 			}
 			addresses = append(addresses, element)
 		}
@@ -46,7 +47,7 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 
 		// validate the request body
 		if err := c.BindJSON(&address); err != nil {
-			log.Fatal(err.Error())
+			fmt.Println(err.Error())
 			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
