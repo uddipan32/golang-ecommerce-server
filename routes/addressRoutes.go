@@ -3,6 +3,7 @@ package routes
 import (
 	"context"
 	"fmt"
+	"golang-ecommerce-server/middleware"
 	"golang-ecommerce-server/models"
 	"golang-ecommerce-server/responses"
 	"log"
@@ -16,7 +17,7 @@ import (
 )
 
 func AddressRoutes(client *mongo.Client, router *gin.Engine) {
-
+	router.Use(middleware.Authenticate())
 	router.GET("/get/all/addresses", func(c *gin.Context) {
 		var addresses []models.Address
 		collection := client.Database("go-ecommerce").Collection("addresses")
@@ -42,6 +43,10 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 
 	router.POST("/add/address", func(c *gin.Context) {
 		log.Println("==== ADD ADDRESS ====")
+		fmt.Println(c.GetString("id"))
+		userId, err := primitive.ObjectIDFromHex(c.GetString("id"))
+		log.Print(userId)
+		log.Print(c)
 		var address models.Address
 		ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 
@@ -52,10 +57,9 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 			return
 		}
 
-		log.Print(address)
-
 		newAddress := models.Address{
 			ID:      primitive.NewObjectID(),
+			UserId:  userId,
 			Name:    address.Name,
 			Address: address.Address,
 			City:    address.City,
@@ -63,8 +67,6 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 			Email:   address.Email,
 			Phone:   address.Phone,
 		}
-
-		log.Print(newAddress)
 
 		collection := client.Database("go-ecommerce").Collection("addresses")
 		result, err := collection.InsertOne(ctx, newAddress)

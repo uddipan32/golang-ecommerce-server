@@ -13,19 +13,19 @@ type SignedDetails struct {
 	Email string
 	Name  string
 	Phone string
-	Uid   string
+	Id    string
 	jwt.StandardClaims
 }
 
 var SECRET_KEY string = os.Getenv("JWT_SECRET_KEY")
 var TOKEN_EXPIRES_AT = time.Now().Local().Add(time.Hour * time.Duration(24)).Unix()
 
-func GenerateAllTokens(email string, name string, phone, uid string) (signedToken string, err error) {
+func GenerateAllTokens(email string, name string, phone, id string) (signedToken string, err error) {
 	claims := &SignedDetails{
 		Email: email,
 		Name:  name,
 		Phone: phone,
-		Uid:   uid,
+		Id:    id,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: TOKEN_EXPIRES_AT,
 		},
