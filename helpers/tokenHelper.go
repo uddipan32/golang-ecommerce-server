@@ -48,6 +48,7 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 		},
 	)
 	if err != nil {
+		fmt.Print(err)
 		msg = err.Error()
 		return
 	}

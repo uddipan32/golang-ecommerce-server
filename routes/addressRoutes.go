@@ -17,14 +17,17 @@ import (
 )
 
 func AddressRoutes(client *mongo.Client, router *gin.Engine) {
-	router.Use(middleware.Authenticate())
-	router.GET("/get/all/addresses", func(c *gin.Context) {
+	var addressCollection = client.Database("go-ecommerce").Collection("addresses")
+
+	// ==============================
+	// ==== GET MY ALL ADDRESSES ====
+	// ==============================
+	router.GET("/get/all/addresses", middleware.Authenticate(), func(c *gin.Context) {
 		var addresses []models.Address
-		collection := client.Database("go-ecommerce").Collection("addresses")
 		ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-		cursor, err := collection.Find(ctx, bson.D{})
+		cursor, err := addressCollection.Find(ctx, bson.D{})
 		if err != nil {
-			c.JSON(http.StatusNotFound, responses.UserResponse{Status: http.StatusNotFound, Message: "No Found"})
+			c.JSON(http.StatusNotFound, responses.UserResponse{Status: http.StatusNotFound, Message: "Not Found"})
 			return
 		}
 		for cursor.Next(ctx) {
@@ -41,7 +44,10 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 		c.JSON(http.StatusOK, addresses)
 	})
 
-	router.POST("/add/address", func(c *gin.Context) {
+	// =====================
+	// ==== ADD ADDRESS ====
+	// =====================
+	router.POST("/add/address", middleware.Authenticate(), func(c *gin.Context) {
 		log.Println("==== ADD ADDRESS ====")
 		fmt.Println(c.GetString("id"))
 		userId, err := primitive.ObjectIDFromHex(c.GetString("id"))
@@ -68,8 +74,7 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 			Phone:   address.Phone,
 		}
 
-		collection := client.Database("go-ecommerce").Collection("addresses")
-		result, err := collection.InsertOne(ctx, newAddress)
+		result, err := addressCollection.InsertOne(ctx, newAddress)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 			return
