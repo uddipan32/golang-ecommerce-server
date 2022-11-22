@@ -52,7 +52,6 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 		fmt.Println(c.GetString("id"))
 		userId, err := primitive.ObjectIDFromHex(c.GetString("id"))
 		log.Print(userId)
-		log.Print(c)
 		var address models.Address
 		ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 
@@ -74,6 +73,7 @@ func AddressRoutes(client *mongo.Client, router *gin.Engine) {
 			Phone:   address.Phone,
 		}
 
+		fmt.Println(newAddress)
 		result, err := addressCollection.InsertOne(ctx, newAddress)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})

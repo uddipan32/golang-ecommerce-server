@@ -15,6 +15,7 @@ type Address struct {
 	State     *string            `json:"state"`
 	Email     *string            `json:"email" validate:"email,required"`
 	Phone     *string            `json:"phone" validate:"required"`
+	Status    *string            `default:"ACTIVE" json:"status"`
 	CreatedAt time.Time          `json:"createdAt`
 	UpdatedAt time.Time          `json:"updatedAt"`
 }
